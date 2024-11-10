@@ -9,24 +9,26 @@ namespace ComputerGraphics2
 {
     public class Mesh
     {
-        Vector3[,] ControlPoints;
+        public Vector3[,] ControlPoints;
         public List<List<Vertex>> MeshPoints = new List<List<Vertex>>();
         public List<Triangle> Triangles = new List<Triangle>();
         public double rotationX;
         public double rotationZ;
-        public Mesh(Vector3 [,] ControlPoints, int interval, double rotationX, double rotationZ)
+        public bool bmap;
+        public Mesh(Vector3 [,] ControlPoints, int interval, double rotationX, double rotationZ, bool bmap)
         {
             this.ControlPoints = ControlPoints;
             this.rotationX = 0;
             this.rotationZ = 0;
+            this.bmap = bmap;
             for (int i = 0; i <= interval; i++)
             {
                 MeshPoints.Add(new List<Vertex>());
                 for (int j = 0; j <= interval; j++)
                 {
-                    double u = (double)i/(double)interval;
-                    double v = (double)j/(double)interval;
-                    Vector3 pom = FindBezierpoint(u, v);
+                    float u = (float)i/(float)interval;
+                    float v = (float)j/(float)interval;
+                    Vector3 pom = Helpers.FindBezierpoint(u, v, ControlPoints, 4, 4);
                     Vector3 pu = Vector3.Normalize(FindVectorPu(u, v));
                     Vector3 pv = Vector3.Normalize(FindVectorPv(u, v));
                     MeshPoints[i].Add(new Vertex(pom, pu, pv, u, v));
@@ -38,8 +40,8 @@ namespace ComputerGraphics2
             {
                 for (int j = 0; j < MeshPoints[i].Count - 1; j++)
                 {
-                    Triangles.Add(new Triangle(MeshPoints[i][j], MeshPoints[i - 1][j], MeshPoints[i - 1][j + 1]));
-                    Triangles.Add(new Triangle(MeshPoints[i][j], MeshPoints[i][j + 1], MeshPoints[i - 1][j + 1]));
+                    Triangles.Add(new Triangle(MeshPoints[i][j], MeshPoints[i - 1][j], MeshPoints[i - 1][j + 1], bmap));
+                    Triangles.Add(new Triangle(MeshPoints[i][j], MeshPoints[i][j + 1], MeshPoints[i - 1][j + 1], bmap));
                 }
             }
         }
@@ -49,21 +51,6 @@ namespace ComputerGraphics2
             {
                 triangle.Draw(g, mesh, kd, ks, m, Il, IO, Light);
             }
-        }
-        Vector3 FindBezierpoint(double u, double v)
-        {
-            Vector3 ret = new Vector3(0, 0, 0);
-            for(int i = 0; i < 4; i++)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    double pom = Helpers.Newton[3, i] * Math.Pow(u, i) * Math.Pow(1 - u, 3 - i) * Helpers.Newton[3, j] * Math.Pow(v, j) * Math.Pow(1 - v, 3 - j);
-                    ret.X += ControlPoints[i, j].X * (float)pom;
-                    ret.Y += ControlPoints[i, j].Y * (float)pom;
-                    ret.Z += ControlPoints[i, j].Z * (float)pom;
-                }
-            }
-            return ret;
         }
         Vector3 FindVectorPu(double u, double v)
         {

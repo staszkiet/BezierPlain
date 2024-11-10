@@ -14,8 +14,8 @@ namespace ComputerGraphics2
         public Vector3 pu;
         public Vector3 pv;
         public Vector3 N;
-        public double u;
-        public double v;
+        public float u;
+        public float v;
         public Vector3 I;
         public float X
         {
@@ -38,7 +38,7 @@ namespace ComputerGraphics2
                 return actualPoint.Z;
             }
         }
-        public Vertex(Vector3 point, Vector3 pu, Vector3 pv ,double u, double v)
+        public Vertex(Vector3 point, Vector3 pu, Vector3 pv ,float u, float v)
         {
             actualPoint = point;
             this.u = u;

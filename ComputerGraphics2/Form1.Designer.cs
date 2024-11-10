@@ -30,6 +30,7 @@
         {
             splitContainer1 = new SplitContainer();
             pictureBox1 = new PictureBox();
+            checkBox2 = new CheckBox();
             button2 = new Button();
             button1 = new Button();
             label6 = new Label();
@@ -72,6 +73,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(checkBox2);
             splitContainer1.Panel2.Controls.Add(button2);
             splitContainer1.Panel2.Controls.Add(button1);
             splitContainer1.Panel2.Controls.Add(label6);
@@ -100,6 +102,19 @@
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             pictureBox1.Paint += PictureBox_Paint;
+            // 
+            // checkBox2
+            // 
+            checkBox2.AutoSize = true;
+            checkBox2.Checked = true;
+            checkBox2.CheckState = CheckState.Checked;
+            checkBox2.Location = new Point(25, 367);
+            checkBox2.Name = "checkBox2";
+            checkBox2.Size = new Size(93, 29);
+            checkBox2.TabIndex = 15;
+            checkBox2.Text = "Texture";
+            checkBox2.UseVisualStyleBackColor = true;
+            checkBox2.CheckedChanged += checkBox2_CheckedChanged;
             // 
             // button2
             // 
@@ -247,7 +262,7 @@
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(156, 69);
             trackBar1.TabIndex = 0;
-            trackBar1.Value = 5;
+            trackBar1.Value = 6;
             trackBar1.ValueChanged += trackBar1_ValueChanged;
             // 
             // Form1
@@ -294,5 +309,6 @@
         private ColorDialog colorDialog1;
         private Button button2;
         private ColorDialog colorDialog2;
+        private CheckBox checkBox2;
     }
 }

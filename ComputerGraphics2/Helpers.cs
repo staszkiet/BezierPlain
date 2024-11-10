@@ -38,5 +38,21 @@ namespace ComputerGraphics2
 
             return new Vector3(l1, l2, l3);
         }
+
+        public static Vector3 FindBezierpoint(double u, double v, Vector3[,] ControlPoints, int limi, int limj)
+        {
+            Vector3 ret = new Vector3(0, 0, 0);
+            for (int i = 0; i < limi; i++)
+            {
+                for (int j = 0; j < limj; j++)
+                {
+                    double pom = Helpers.Newton[3, i] * Math.Pow(u, i) * Math.Pow(1 - u, 3 - i) * Helpers.Newton[3, j] * Math.Pow(v, j) * Math.Pow(1 - v, 3 - j);
+                    ret.X += ControlPoints[i, j].X * (float)pom;
+                    ret.Y += ControlPoints[i, j].Y * (float)pom;
+                    ret.Z += ControlPoints[i, j].Z * (float)pom;
+                }
+            }
+            return ret;
+        }
     }
 }

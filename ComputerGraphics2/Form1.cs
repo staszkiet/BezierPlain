@@ -12,6 +12,8 @@ namespace ComputerGraphics2
         public Vector3 Light = new Vector3(0, 0, 200);
         public Vector3 LightColor = new Vector3(1, 1, 1);
         Vector3 ObjectColor = new Vector3(1, 0, 0);
+        public static Bitmap bm = new Bitmap("C:\\Users\\zaprz\\source\\repos\\ComputerGraphics2\\ComputerGraphics2\\Tileable+stone+wall+texture-1150759509.jpg");
+
         public Form1()
         {
             var fileStream = File.OpenRead("C:\\Users\\zaprz\\source\\repos\\ComputerGraphics2\\ComputerGraphics2\\init.txt");
@@ -32,7 +34,7 @@ namespace ComputerGraphics2
                 }
             }
             InitializeComponent();
-            mesh = new Mesh(ControlPoints, trackBar1.Value, 0, 0);
+            mesh = new Mesh(ControlPoints, trackBar1.Value, 0, 0, checkBox2.Checked);
             typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, splitContainer1.Panel1, new object[] { true });
         }
 
@@ -42,16 +44,12 @@ namespace ComputerGraphics2
             Graphics g = e.Graphics;
             g.ScaleTransform(1, -1);
             g.TranslateTransform(splitContainer1.Panel1.Width / 2, -splitContainer1.Panel1.Height / 2);
-            foreach (var p in ControlPoints)
-            {
-                e.Graphics.FillRectangle(ControlPointBrush, p.X - 5, p.Y - 5, 10, 10);
-            }
             mesh.DrawMesh(g, checkBox1.Checked, (double)trackBarkd.Value / (double)trackBarkd.Maximum, (double)trackBarks.Value / (double)trackBarks.Maximum, trackBarm.Value, LightColor, ObjectColor, Light);
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
         {
-            mesh = new Mesh(ControlPoints, trackBar1.Value, mesh.rotationX, mesh.rotationZ);
+            mesh = new Mesh(ControlPoints, trackBar1.Value, mesh.rotationX, mesh.rotationZ, checkBox2.Checked);
             pictureBox1.Invalidate();
         }
 
@@ -115,6 +113,15 @@ namespace ComputerGraphics2
                 LightColor = new Vector3((float)colorDialog2.Color.R / 255, (float)colorDialog2.Color.G / 255, (float)colorDialog2.Color.B / 255);
                 pictureBox1.Invalidate();
             }
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (Triangle t in mesh.Triangles)
+            {
+                t.bmap = checkBox2.Checked;
+            }
+            pictureBox1.Invalidate();
         }
     }
 }
