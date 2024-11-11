@@ -5,14 +5,37 @@ namespace ComputerGraphics2
 {
     public partial class Form1 : Form
     {
+        //        -200 -150 30
+        //-220 0 -10
+        //-200 100 0
+        //-160 200 20
+        //-100 -100 0
+        //-100 0 40
+        //-100 100 0
+        //-100 200 -50
+        //0 -100 0
+        //0 20 50
+        //0 100 50
+        //0 150 12
+        //100 -100 10
+        //100 0 0
+        //100 150 0
+        //100 180 0
+
+
         Vector3[,] ControlPoints = new Vector3[4, 4];
         Brush ControlPointBrush = new SolidBrush(Color.Green);
         Pen ControlEdgePen = new Pen(new SolidBrush(Color.Black));
         public Mesh mesh;
-        public Vector3 Light = new Vector3(0, 0, 200);
+        public static Vector3 Light = new Vector3(0, 0, 100);
         public Vector3 LightColor = new Vector3(1, 1, 1);
+        static System.Windows.Forms.Timer myTimer = new System.Windows.Forms.Timer();
         Vector3 ObjectColor = new Vector3(1, 0, 0);
-        public static Bitmap bm = new Bitmap("C:\\Users\\zaprz\\source\\repos\\ComputerGraphics2\\ComputerGraphics2\\Tileable+stone+wall+texture-1150759509.jpg");
+        public static Bitmap bm = new Bitmap("C:\\Users\\zaprz\\source\\repos\\ComputerGraphics2\\ComputerGraphics2\\154.jpg");
+        public static Bitmap NormalMap = new Bitmap("C:\\Users\\zaprz\\source\\repos\\ComputerGraphics2\\ComputerGraphics2\\154_norm.jpg");
+        const int lightR = 50;
+        float lightTheta = 0;
+        bool if_animating = true;
 
         public Form1()
         {
@@ -36,8 +59,20 @@ namespace ComputerGraphics2
             InitializeComponent();
             mesh = new Mesh(ControlPoints, trackBar1.Value, 0, 0, checkBox2.Checked);
             typeof(Panel).InvokeMember("DoubleBuffered", BindingFlags.SetProperty | BindingFlags.Instance | BindingFlags.NonPublic, null, splitContainer1.Panel1, new object[] { true });
+            myTimer.Tick += new EventHandler(TimerEventProcessor);
+            myTimer.Interval = 100;
+            myTimer.Start();
         }
 
+        private void TimerEventProcessor(Object myObject,
+                                        EventArgs myEventArgs)
+        {
+            myTimer.Stop();
+            lightTheta = lightTheta + 0.2f > 2 * Math.PI ? 0 : lightTheta + 0.2f;
+            Light = new Vector3((float)(lightR * Math.Cos(lightTheta)), (float)(lightR * Math.Sin(lightTheta)), Light.Z);
+            pictureBox1.Invalidate();
+            myTimer.Enabled = true;
+        }
         private void PictureBox_Paint(object sender, PaintEventArgs e)
         {
 
@@ -45,6 +80,7 @@ namespace ComputerGraphics2
             g.ScaleTransform(1, -1);
             g.TranslateTransform(splitContainer1.Panel1.Width / 2, -splitContainer1.Panel1.Height / 2);
             mesh.DrawMesh(g, checkBox1.Checked, (double)trackBarkd.Value / (double)trackBarkd.Maximum, (double)trackBarks.Value / (double)trackBarks.Maximum, trackBarm.Value, LightColor, ObjectColor, Light);
+            g.FillEllipse(ControlPointBrush, Light.X - 5, Light.Y - 5, 10, 10);
         }
 
         private void trackBar1_ValueChanged(object sender, EventArgs e)
@@ -120,6 +156,66 @@ namespace ComputerGraphics2
             foreach (Triangle t in mesh.Triangles)
             {
                 t.bmap = checkBox2.Checked;
+            }
+            pictureBox1.Invalidate();
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox3.Checked)
+            {
+                myTimer.Enabled = true;
+            }
+            else
+            {
+                myTimer.Stop();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            DialogResult result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                string file = openFileDialog1.FileName;
+                try
+                {
+                    bm = new Bitmap(file);
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine("bruh");
+                }
+            }
+            pictureBox1.Invalidate();
+
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            foreach (Triangle t in mesh.Triangles)
+            {
+                t.nmap = checkBox4.Checked;
+            }
+            pictureBox1.Invalidate();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            DialogResult result = openFileDialog1.ShowDialog();
+            if (result == DialogResult.OK) // Test result.
+            {
+                string file = openFileDialog1.FileName;
+                try
+                {
+                    NormalMap = new Bitmap(file);
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine("bruh");
+                }
             }
             pictureBox1.Invalidate();
         }

@@ -30,6 +30,10 @@
         {
             splitContainer1 = new SplitContainer();
             pictureBox1 = new PictureBox();
+            button4 = new Button();
+            checkBox4 = new CheckBox();
+            button3 = new Button();
+            checkBox3 = new CheckBox();
             checkBox2 = new CheckBox();
             button2 = new Button();
             button1 = new Button();
@@ -73,6 +77,10 @@
             // 
             // splitContainer1.Panel2
             // 
+            splitContainer1.Panel2.Controls.Add(button4);
+            splitContainer1.Panel2.Controls.Add(checkBox4);
+            splitContainer1.Panel2.Controls.Add(button3);
+            splitContainer1.Panel2.Controls.Add(checkBox3);
             splitContainer1.Panel2.Controls.Add(checkBox2);
             splitContainer1.Panel2.Controls.Add(button2);
             splitContainer1.Panel2.Controls.Add(button1);
@@ -102,6 +110,52 @@
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             pictureBox1.Paint += PictureBox_Paint;
+            // 
+            // button4
+            // 
+            button4.Location = new Point(225, 328);
+            button4.Name = "button4";
+            button4.Size = new Size(131, 34);
+            button4.TabIndex = 19;
+            button4.Text = "NormalMap";
+            button4.UseVisualStyleBackColor = true;
+            button4.Click += button4_Click;
+            // 
+            // checkBox4
+            // 
+            checkBox4.AutoSize = true;
+            checkBox4.Checked = true;
+            checkBox4.CheckState = CheckState.Checked;
+            checkBox4.Location = new Point(223, 402);
+            checkBox4.Name = "checkBox4";
+            checkBox4.Size = new Size(133, 29);
+            checkBox4.TabIndex = 18;
+            checkBox4.Text = "NormalMap";
+            checkBox4.UseVisualStyleBackColor = true;
+            checkBox4.CheckedChanged += checkBox4_CheckedChanged;
+            // 
+            // button3
+            // 
+            button3.Location = new Point(232, 288);
+            button3.Name = "button3";
+            button3.Size = new Size(112, 34);
+            button3.TabIndex = 17;
+            button3.Text = "Texture";
+            button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
+            // checkBox3
+            // 
+            checkBox3.AutoSize = true;
+            checkBox3.Checked = true;
+            checkBox3.CheckState = CheckState.Checked;
+            checkBox3.Location = new Point(22, 402);
+            checkBox3.Name = "checkBox3";
+            checkBox3.Size = new Size(120, 29);
+            checkBox3.TabIndex = 16;
+            checkBox3.Text = "Animation";
+            checkBox3.UseVisualStyleBackColor = true;
+            checkBox3.CheckedChanged += checkBox3_CheckedChanged;
             // 
             // checkBox2
             // 
@@ -210,7 +264,7 @@
             trackBarks.Name = "trackBarks";
             trackBarks.Size = new Size(156, 69);
             trackBarks.TabIndex = 5;
-            trackBarks.Value = 1;
+            trackBarks.Value = 100;
             trackBarks.ValueChanged += trackBarks_ValueChanged;
             // 
             // trackBarkd
@@ -220,7 +274,7 @@
             trackBarkd.Name = "trackBarkd";
             trackBarkd.Size = new Size(156, 69);
             trackBarkd.TabIndex = 4;
-            trackBarkd.Value = 1;
+            trackBarkd.Value = 100;
             trackBarkd.ValueChanged += trackBarkd_ValueChanged;
             // 
             // checkBox1
@@ -257,7 +311,7 @@
             // trackBar1
             // 
             trackBar1.Location = new Point(12, 12);
-            trackBar1.Maximum = 100;
+            trackBar1.Maximum = 60;
             trackBar1.Minimum = 2;
             trackBar1.Name = "trackBar1";
             trackBar1.Size = new Size(156, 69);
@@ -310,5 +364,9 @@
         private Button button2;
         private ColorDialog colorDialog2;
         private CheckBox checkBox2;
+        private CheckBox checkBox3;
+        private Button button3;
+        private Button button4;
+        private CheckBox checkBox4;
     }
 }

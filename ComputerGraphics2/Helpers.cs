@@ -26,6 +26,9 @@ namespace ComputerGraphics2
             float x = (float)(kd * Il.X * Io.X * (pomNL >= 0 ? pomNL : 0) + ks*Il.X*Io.X*Math.Pow(pomVR, m));
             float y = (float)(kd * Il.Y * Io.Y * (pomNL >= 0 ? pomNL : 0) + ks * Il.Y * Io.Y * Math.Pow(pomVR, m));
             float z = (float)(kd * Il.Z * Io.Z * (pomNL >= 0 ? pomNL : 0) + ks * Il.Z * Io.Z * Math.Pow(pomVR, m));
+            x = x < 0 ? 0 : x;
+            y = y < 0 ? 0 : y;
+            z = z < 0 ? 0 : z;
             return new Vector3(x*(float)255 > 255 ? 255 : x*255, y*(float)255 > 255 ? 255 : y*255, z*(float)255 > 255 ? 255 : z*255);
         }
 

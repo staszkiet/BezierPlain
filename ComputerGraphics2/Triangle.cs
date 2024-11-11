@@ -15,6 +15,7 @@ namespace ComputerGraphics2
         Pen p = new Pen(new SolidBrush(Color.Black));
         Pen fillP = new Pen(new SolidBrush(Color.FromArgb(Helpers.r.Next(255), Helpers.r.Next(255), Helpers.r.Next(255))));
         public bool bmap = true;
+        public bool nmap = true;
         public Triangle(Vertex p1, Vertex p2, Vertex p3, bool bmap)
         {
             tab = new Vertex[3];
@@ -34,33 +35,66 @@ namespace ComputerGraphics2
                 g.DrawLine(p, (int)tab[0].X, (int)tab[0].Y, (int)tab[2].X, (int)tab[2].Y);
             }
         }
+        public Vector3 MatrixProductVector(Vector3 N0, Vector3 N1, Vector3 N2, Vector3 pom)
+        {
+            return new Vector3(pom.X * N0.X + pom.Y * N1.X + pom.Z * N2.X, pom.X * N0.Y + pom.Y * N1.Y + pom.Z * N2.Y, pom.X * N0.Z + pom.Y * N1.Z + pom.Z * N2.Z);
+        }
 
+        public Vector3 GetNormalVectorFromNormalMap(float u, float v, Vector3 BarycentricCoords, Vector3 N)
+        {
+            int nmapx = (int)(u * (float)Form1.NormalMap.Width);
+            int nmapy = (int)(v * (float)Form1.NormalMap.Height);
+            nmapx = nmapx < 0 ? 0 : nmapx >= Form1.NormalMap.Width ? Form1.NormalMap.Width - 1 : nmapx;
+            nmapy = nmapy < 0 ? 0 : nmapy >= Form1.NormalMap.Height ? Form1.NormalMap.Height - 1 : nmapy;
+            Color NormalMapColor = Form1.NormalMap.GetPixel(nmapx, nmapy);
+            float R = (NormalMapColor.R - 127f) / 128f;
+            float G = (NormalMapColor.G - 127f) / 128f;
+            float B = (NormalMapColor.B - 127f) / 128f;
+            Vector3 Nt = new Vector3(R, G, B);
+            Vector3 pu = MatrixProductVector(tab[0].pu, tab[1].pu, tab[2].pu, BarycentricCoords);
+            Vector3 pv = MatrixProductVector(tab[0].pv, tab[1].pv, tab[2].pv, BarycentricCoords);
+            pu = Vector3.Normalize(pu);
+            pv = Vector3.Normalize(pv);
+            return MatrixProductVector(pu, pv, N, Nt);
+        }
         public void SetPixel(Graphics g, int k, int scanline, double kd, double ks, double m, Vector3 Il, Vector3 Io, Vector3 Light)
         {
             Vector3 pom = Helpers.CalculateBarycentricCoords(new Vector2(k, scanline), tab[0].actualPoint, tab[1].actualPoint, tab[2].actualPoint);
-            pom.X = pom.X < 0 ? 0 : pom.X > 1 ? 1 : pom.X;
-            pom.Y = pom.Y < 0 ? 0 : pom.Y > 1 ? 1 : pom.Y;
-            pom.Z = pom.Z < 0 ? 0 : pom.Z > 1 ? 1 : pom.Z;
-            Vector3 N = new Vector3(pom.X * tab[0].N.X + pom.Y * tab[1].N.X + pom.Z * tab[2].N.X, pom.X * tab[0].N.Y + pom.Y * tab[1].N.Y + pom.Z * tab[2].N.Y, pom.X * tab[0].N.Z + pom.Y * tab[1].N.Z + pom.Z * tab[2].N.Z);
+            Vector3 N = MatrixProductVector(tab[0].N, tab[1].N, tab[2].N, pom);
+            if (nmap)
+            {
+                float u = tab[0].u * pom.X + tab[1].u * pom.Y + tab[2].u * pom.Z;
+                float v = tab[0].v * pom.X + tab[1].v * pom.Y + tab[2].v * pom.Z;
+                u = u < 0 ? 0 : u > 1 ? 1 : u;
+                v = v < 0 ? 0 : v > 1 ? 1 : v;
+                v = 1 - v;
+                N = GetNormalVectorFromNormalMap(u, v, pom, N);
+            }
             Vector3 color = Helpers.CountI(k, scanline, pom.Z, kd, ks, m, Il, Io, Light, N);
             g.FillRectangle(new SolidBrush(Color.FromArgb((int)color.X, (int)color.Y, (int)color.Z)), k, scanline, 1, 1);
         }
-        public void SetPixelFromMesh(Graphics g, int k, int scanline)
+        public void SetPixelFromMesh(Graphics g, int k, int scanline, double kd, double ks, double m, Vector3 Il, Vector3 Light)
         {
             Vector3 pom = Helpers.CalculateBarycentricCoords(new Vector2(k, scanline), tab[0].actualPoint, tab[1].actualPoint, tab[2].actualPoint);
-            pom.X = pom.X < 0 ? 0 : pom.X > 1 ? 1 : pom.X;
-            pom.Y = pom.Y < 0 ? 0 : pom.Y > 1 ? 1 : pom.Y;
-            pom.Z = pom.Z < 0 ? 0 : pom.Z > 1 ? 1 : pom.Z;
+            Vector3 N = MatrixProductVector(tab[0].N, tab[1].N, tab[2].N, pom);
+
             float u = tab[0].u * pom.X + tab[1].u * pom.Y + tab[2].u * pom.Z;
             float v = tab[0].v * pom.X + tab[1].v * pom.Y + tab[2].v * pom.Z;
             u = u < 0 ? 0 : u > 1 ? 1 : u;
             v = v < 0 ? 0 : v > 1 ? 1 : v;
+            v = 1 - v;
             int bitmapx = (int)(u * (float)Form1.bm.Width);
             int bitmapy = (int)(v * (float)Form1.bm.Height);
             bitmapx = bitmapx < 0 ? 0 : bitmapx >= Form1.bm.Width ? Form1.bm.Width - 1 : bitmapx;
             bitmapy = bitmapy < 0 ? 0 : bitmapy >= Form1.bm.Height ? Form1.bm.Height - 1 : bitmapy;
-            int color = Form1.bm.GetPixel(bitmapx, bitmapy).ToArgb();
-            g.FillRectangle(new SolidBrush(Color.FromArgb(color)), k, scanline, 1, 1);
+            Color BitMapColor = Form1.bm.GetPixel(bitmapx, bitmapy);
+            if (nmap)
+            {
+                N = GetNormalVectorFromNormalMap(u, v, pom, N);
+            }
+            Vector3 Io = new Vector3((float)BitMapColor.R/256f, (float)BitMapColor.G/256f, (float)BitMapColor.B/256f);
+            Vector3 color = Helpers.CountI(k, scanline, pom.Z, kd, ks, m, Il, Io, Light, N);
+            g.FillRectangle(new SolidBrush(Color.FromArgb((int)color.X, (int)color.Y, (int)color.Z)), k, scanline, 1, 1);
         }
         public void Fill(Graphics g, double kd, double ks, double m, Vector3 Il, Vector3 Io, Vector3 Light)
         {
@@ -71,7 +105,7 @@ namespace ComputerGraphics2
             idx.Add(2);
             idx.Sort((x, y) => (int)tab[x].Y - (int)tab[y].Y != 0 ? (int)tab[x].Y - (int)tab[y].Y : (int)tab[x].X - (int)tab[y].X);
             int scanline = (int)tab[idx[0]].Y;
-            int end = (int)tab[idx[2]].Y;
+            int end = (int)Math.Ceiling(tab[idx[2]].Y);
             int i = 0;
             List<int> IdxOnScanline = new List<int>();
             scanline++;
@@ -83,21 +117,21 @@ namespace ComputerGraphics2
                     {
                         IdxOnScanline.Add(idx[i]);
                         i++;
-                        if (i != 0 && i % 2 == 0)
+                        if (IdxOnScanline.Count != 0 && IdxOnScanline.Count % 2 == 0)
                         {
-                            for (int k = (int)tab[idx[i-2]].X; k <= (int)tab[idx[i-1]].X; k++)
+                            for (int k = (int)tab[idx[i - 2]].X; k <= (int)tab[idx[i - 1]].X; k++)
                             {
                                 if (!bmap)
                                 {
-                                    SetPixel(g, k, scanline-1, kd, ks, m, Il, Io, Light);
+                                    SetPixel(g, k, scanline - 1, kd, ks, m, Il, Io, Light);
                                 }
                                 else
                                 {
-                                    SetPixelFromMesh(g, k, scanline-1);
+                                    SetPixelFromMesh(g, k, scanline - 1, kd, ks, m, Il, Light);
                                 }
                             }
                         }
-                    } while (i < tab.Count() && (int)tab[idx[i]].Y == (int)tab[idx[i-1]].Y);
+                    } while (i < tab.Count() && (int)tab[idx[i]].Y == (int)tab[idx[i - 1]].Y);
                     foreach (int index in IdxOnScanline)
                     {
                         int previdx = index == 0 ? 2 : index - 1;
@@ -151,7 +185,7 @@ namespace ComputerGraphics2
                 ActiveEdges.Sort((x, y) => (int)x.x - (int)y.x);
                 for(int j = 1; j < ActiveEdges.Count; j = j + 2)
                 {
-                    for (int k = (int)ActiveEdges[j - 1].x; k <= (int)ActiveEdges[j].x; k++)
+                    for (int k = (int)ActiveEdges[j - 1].x; k <= Math.Ceiling(ActiveEdges[j].x); k++)
                     {
                         if (!bmap)
                         {
@@ -159,7 +193,7 @@ namespace ComputerGraphics2
                         }
                         else
                         {
-                            SetPixelFromMesh(g, k, scanline);
+                            SetPixelFromMesh(g, k, scanline, kd, ks, m, Il, Light);
                         }
                     }
                 }

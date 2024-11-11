@@ -111,8 +111,8 @@ namespace ComputerGraphics2
             {
                 for (int j = 0; j < MeshPoints[i].Count; j++)
                 {
-                    Vector3 newPos = new Vector3((float)(MeshPoints[i][j].X * Math.Cos(rad) - MeshPoints[i][j].Y * Math.Sin(rad)),
-                        (float)( MeshPoints[i][j].X * Math.Sin(rad) + MeshPoints[i][j].Y * Math.Cos(rad)), MeshPoints[i][j].Z);
+                    Vector3 newPos = new Vector3((float)(MeshPoints[i][j].X * Math.Cos(rad) - (double)MeshPoints[i][j].Y * Math.Sin(rad)),
+                        (float)(MeshPoints[i][j].X * Math.Sin(rad) + MeshPoints[i][j].Y * Math.Cos(rad)), MeshPoints[i][j].Z);
                     MeshPoints[i][j].actualPoint = newPos;
                 }
             }
